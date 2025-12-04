@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
   <meta name="theme-color" content="#0d6efd">
-  <title>FoodScan — Breakdown</title>
+  <title>MyNutriguide — Breakdown</title>
   <link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}">
   <link rel="apple-touch-icon" href="{{ url_for('static', filename='logo.png') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/breakdown.css') }}">
@@ -76,6 +76,17 @@
         </p>
     </div>
 
+    <!-- Ingredients Section -->
+    {% if analysis.list_ingredients %}
+    <div class="section">
+        <div class="section-title">Ingredients</div>
+        <div class="ingredients-list">
+            {% for ingredient in analysis.list_ingredients %}
+                <span class="ingredient-tag">{{ ingredient }}</span>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
 
     <!-- Warnings Section -->
     {% if analysis.warnings %}

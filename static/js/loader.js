@@ -53,5 +53,5 @@ document.addEventListener("DOMContentLoaded", function() {
 
     // Hide loader after initial load (simulating app load time)
     // You can adjust the timeout or remove it if you want it to disappear immediately after DOM load
-    setTimeout(window.hideLoader, 2000); 
+    setTimeout(window.hideLoader, 3000); 
 });

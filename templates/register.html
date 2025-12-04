@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <meta name="theme-color" content="#0d6efd">
-  <title>FoodScan — Register</title>
+  <title>MyNutriguide — Register</title>
   <link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}">
   <link rel="apple-touch-icon" href="{{ url_for('static', filename='logo.png') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">
@@ -22,12 +22,14 @@
       </div>
   </div>
 
+  <button id="install-btn" class="btn-install" style="display: none; position: absolute; top: 20px; right: 20px; z-index: 1000; background: var(--brand); color: white; border: none; padding: 8px 16px; border-radius: 20px; font-weight: 600; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.2);">Install App</button>
+
   <div class="panel" role="main" aria-label="Register panel">
     <div class="logo" aria-hidden="true">
-      <div class="mark" title="FoodScan">
-        <img src="{{ url_for('static', filename='logo_b.svg') }}" alt="FoodScan Logo" style="width: 20px;">
+      <div class="mark" title="MyNutriguide">
+        <img src="{{ url_for('static', filename='logo_b.svg') }}" alt="MyNutriguide Logo" style="width: 20px;">
       </div>
-      <div>FoodScan</div>
+      <div>MyNutriguide</div>
     </div>
 
     <div class="content-wrapper">
@@ -140,6 +142,19 @@
             <a href="{{ url_for('auth.login') }}" style="font-size:13px; color:var(--brand); text-decoration:none; font-weight:600;">Already have an account? Login</a>
         </div>
 
+        <div style="display: flex; align-items: center; margin: 20px 0;">
+            <div style="flex: 1; height: 1px; background: #e0e0e0;"></div>
+            <div style="padding: 0 10px; color: #888; font-size: 12px;">OR</div>
+            <div style="flex: 1; height: 1px; background: #e0e0e0;"></div>
+        </div>
+
+        <div>
+            <a href="{{ url_for('auth.google_login') }}" class="btn" style="background: white; color: #333; border: 1px solid #ddd; display: flex; align-items: center; justify-content: center; gap: 10px; box-shadow: none;">
+                <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" width="20" height="20">
+                Register with Google
+            </a>
+        </div>
+
       </form>
     </div>
 
@@ -194,5 +209,6 @@
     }
   </script>
   <script src="{{ url_for('static', filename='js/loader.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/pwa-install.js') }}"></script>
 </body>
 </html>

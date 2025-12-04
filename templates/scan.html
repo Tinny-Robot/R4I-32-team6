@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
   <meta name="theme-color" content="#0d6efd">
-  <title>FoodScan — Scan</title>
+  <title>MyNutriguide — Scan</title>
   <link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}">
   <link rel="apple-touch-icon" href="{{ url_for('static', filename='logo.png') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/scan.css') }}">
@@ -21,6 +21,11 @@
           </div>
       </div>
       <div id="loader-text" style="display: none; color: white; margin-top: 20px; font-size: 18px; font-weight: 500; text-align: center;">Analyzing...</div>
+      
+      <!-- Progress Bar -->
+      <div id="loader-progress-container" class="progress-container" style="display: none;">
+          <div id="loader-progress-bar" class="progress-bar"></div>
+      </div>
   </div>
 
   <div class="scan-container">
@@ -29,6 +34,7 @@
         <video id="video" autoplay playsinline></video>
         <canvas id="canvas" style="display: none;"></canvas>
         <img id="photo" alt="Captured photo" style="display: none;">
+        <div id="focus-ring" class="focus-ring"></div>
     </div>
 
     <!-- UI Overlay -->

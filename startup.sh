@@ -14,6 +14,7 @@ fi
 
 # Activate venv (optional if we use direct paths, but good for env vars)
 source "$VENV_DIR/bin/activate"
+pip install -r requirements.txt
 
 export FLASK_APP=app.py
 export FLASK_DEBUG=0

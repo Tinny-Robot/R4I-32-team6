@@ -9,3 +9,7 @@ python-dotenv
 pytest
 requests
 gunicorn
+authlib
+google-auth
+google-auth-oauthlib
+google-auth-httplib2

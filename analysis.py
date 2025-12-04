@@ -6,6 +6,19 @@ from io import BytesIO
 from PIL import Image
 from openai import OpenAI
 from flask import current_app
+from duckduckgo_search import DDGS
+
+def perform_web_search(query):
+    """
+    Performs a web search using DuckDuckGo and returns the top results.
+    """
+    try:
+        results = DDGS().text(query, max_results=3)
+        search_summary = "\n".join([f"- {r['title']}: {r['body']}" for r in results])
+        return search_summary
+    except Exception as e:
+        current_app.logger.error(f"Web Search Error: {e}")
+        return "No search results available."
 
 def save_temp_image(image_data_base64, filename):
     """
@@ -85,30 +98,21 @@ def analyze_image_vision(image_data_base64, user_profile):
         f"Medications: {user_profile.get('medications', 'None')}\n"
     )
     
-    prompt_text = (
-        f"Analyze this food image using a combination of visual recognition and text extraction. "
-        f"1. Identify the product visually (like a reverse image search). "
-        f"2. Read any visible text (ingredients, nutrition facts). "
-        f"3. Search the web for additional product details if necessary. "
-        f"4. Combine this with your internal knowledge to provide a complete analysis.\n\n"
-        f"User Profile:\n{user_context}\n\n"
-        f"Provide a structured JSON response with the following fields:\n"
-        f"- product_name: The name of the product.\n"
-        f"- warnings: A list of strings (health warnings based on user profile).\n"
-        f"- summary: A conversational summary of whether it's healthy and a recommendation (plain text, no markdown).\n"
-        f"- voice_response: A friendly audio summary suitable for the user based on their profile.\n\n"
-        f"Return ONLY the JSON object, no markdown formatting. "
-        f"If you don't recognize the food or cannot extract details, return 'Unknown Product' for product_name."
+    # Step 1: Identify the product
+    identify_prompt = (
+        "Identify the food product in this image. "
+        "Return ONLY the product name. If you cannot identify it, return 'Unknown'."
     )
 
     try:
-        response = client.chat.completions.create(
+        # First call to identify product
+        identification_response = client.chat.completions.create(
             model="gpt-4o", 
             messages=[
                 {
                     "role": "user",
                     "content": [
-                        {"type": "text", "text": prompt_text},
+                        {"type": "text", "text": identify_prompt},
                         {
                             "type": "image_url",
                             "image_url": {
@@ -118,8 +122,52 @@ def analyze_image_vision(image_data_base64, user_profile):
                     ]
                 }
             ],
-            tools=[
-                {"type": "web_search"}
+            max_tokens=50
+        )
+        product_name = identification_response.choices[0].message.content.strip()
+        print(f"Identified Product: {product_name}")
+
+        # Step 2: Web Search (if product is identified)
+        search_context = ""
+        if product_name and product_name.lower() != "unknown":
+            search_query = f"{product_name} ingredients nutrition facts"
+            search_results = perform_web_search(search_query)
+            search_context = f"\n\nWeb Search Results for '{product_name}':\n{search_results}"
+            print(f"Search Context: {search_context}")
+
+        # Step 3: Final Analysis
+        final_prompt = (
+            f"Analyze this food image and the provided context. "
+            f"1. Confirm the product identity visually. "
+            f"2. Use the web search results to find ingredients and nutritional info if not visible on the pack. "
+            f"3. Combine this with your internal knowledge to provide a complete analysis.\n\n"
+            f"User Profile:\n{user_context}\n"
+            f"{search_context}\n\n"
+            f"Provide a structured JSON response with the following fields:\n"
+            f"- product_name: The name of the product.\n"
+            f"- list_ingredients: A list of ingredients in layman easy to understand English.\n"
+            f"- warnings: A list of strings (health warnings based on user profile).\n"
+            f"- summary: A conversational summary of whether it's healthy and a recommendation (plain text, no markdown).\n"
+            f"- voice_response: A friendly audio summary suitable for the user based on their profile.\n\n"
+            f"Return ONLY the JSON object, no markdown formatting. "
+            f"If you don't recognize the food or cannot extract details, return 'Unknown Product' for product_name."
+        )
+
+        response = client.chat.completions.create(
+            model="gpt-4o", 
+            messages=[
+                {
+                    "role": "user",
+                    "content": [
+                        {"type": "text", "text": final_prompt},
+                        {
+                            "type": "image_url",
+                            "image_url": {
+                                "url": image_data_base64
+                            }
+                        }
+                    ]
+                }
             ],
             max_tokens=1000,
             response_format={"type": "json_object"}

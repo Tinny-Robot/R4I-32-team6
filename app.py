@@ -1,16 +1,20 @@
 from flask import Flask, render_template, request, flash, redirect, url_for, session
 from flask_login import LoginManager, login_required, current_user
 from flask_migrate import Migrate
+from werkzeug.middleware.proxy_fix import ProxyFix
 from config import Config
 from models import db, User
 import json
 from werkzeug.utils import secure_filename
 import os
 import uuid
+import base64
+from io import BytesIO
 from PIL import Image
 
 def create_app(config_class=Config):
     app = Flask(__name__)
+    app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_prefix=1)
     app.config.from_object(config_class)
 
     # Initialize extensions
@@ -112,6 +116,27 @@ def create_app(config_class=Config):
                         os.makedirs(upload_folder, exist_ok=True)
                         
                         image = Image.open(file)
+                        file_path = os.path.join(upload_folder, unique_filename)
+                        image.save(file_path, 'WEBP')
+                        
+                        current_user.profile_picture = unique_filename
+                
+                # Handle Base64 Profile Picture (Client-side resized)
+                elif request.form.get('profile_picture_base64'):
+                    base64_data = request.form.get('profile_picture_base64')
+                    if base64_data:
+                        if ',' in base64_data:
+                            header, encoded = base64_data.split(',', 1)
+                        else:
+                            encoded = base64_data
+                        
+                        image_bytes = base64.b64decode(encoded)
+                        image = Image.open(BytesIO(image_bytes))
+                        
+                        unique_filename = f"{uuid.uuid4().hex}_profile.webp"
+                        upload_folder = os.path.join(app.root_path, 'static', 'uploads')
+                        os.makedirs(upload_folder, exist_ok=True)
+                        
                         file_path = os.path.join(upload_folder, unique_filename)
                         image.save(file_path, 'WEBP')
                         

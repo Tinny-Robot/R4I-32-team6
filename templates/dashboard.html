@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
   <meta name="theme-color" content="#0d6efd">
-  <title>FoodScan — Dashboard</title>
+  <title>MyNutriguide — Dashboard</title>
   <link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}">
   <link rel="apple-touch-icon" href="{{ url_for('static', filename='logo.png') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
@@ -22,27 +22,41 @@
       </div>
   </div>
 
-  <div class="device" role="application" aria-label="FoodScan mobile screen">
+  <!-- flash messages -->
+  {% with messages = get_flashed_messages() %}
+    {% if messages %}
+        <div class="flash-messages" role="alert" aria-live="assertive">
+            {% for message in messages %}
+                <div class="alert alert-info">{{ message }}</div>
+            {% endfor %}
+        </div>
+    {% endif %}
+  {% endwith %}
+
+  <div class="device" role="application" aria-label="MyNutriguide mobile screen">
     <div class="screen">
       <div class="top-row">
-        <a href="{{ url_for('main.dashboard') }}" class="brand" title="FoodScan">
+        <a href="{{ url_for('main.dashboard') }}" class="brand" title="MyNutriguide">
           <div class="sq">
             <img src="{{ url_for('static', filename='logo_b.svg') }}" alt="Logo" style="width: 20px;">
           </div>
-          <div>FoodScan</div>
+          <div>MyNutriguide</div>
         </a>
-        <div class="avatar-container" onclick="toggleDropdown(event)">
-            <div class="avatar" aria-hidden="true">
-                {% if current_user.profile_picture and current_user.profile_picture != 'default_profile.svg' %}
-                    <img src="{{ url_for('static', filename='uploads/' + current_user.profile_picture) }}" alt="Profile">
-                {% else %}
-                    <img src="{{ url_for('static', filename='default_profile.svg') }}" alt="Profile">
-                {% endif %}
-            </div>
-            <div id="profile-dropdown" class="dropdown-menu">
-                <a href="{{ url_for('main.profile') }}" class="dropdown-item">Profile</a>
-                <div class="dropdown-divider"></div>
-                <a href="{{ url_for('auth.logout') }}" class="dropdown-item">Logout</a>
+        <div style="display: flex; align-items: center;">
+            <button id="install-btn" class="btn-install" style="display: none;">Install App</button>
+            <div class="avatar-container" onclick="toggleDropdown(event)">
+                <div class="avatar" aria-hidden="true">
+                    {% if current_user.profile_picture and current_user.profile_picture != 'default_profile.svg' %}
+                        <img src="{{ url_for('static', filename='uploads/' + current_user.profile_picture) }}" alt="Profile">
+                    {% else %}
+                        <img src="{{ url_for('static', filename='default_profile.svg') }}" alt="Profile">
+                    {% endif %}
+                </div>
+                <div id="profile-dropdown" class="dropdown-menu">
+                    <a href="{{ url_for('main.profile') }}" class="dropdown-item">Profile</a>
+                    <div class="dropdown-divider"></div>
+                    <a href="{{ url_for('auth.logout') }}" class="dropdown-item">Logout</a>
+                </div>
             </div>
         </div>
       </div>
@@ -110,8 +124,26 @@
               }
           }
       }
+
+      // Auto-dismiss flash messages
+      document.addEventListener('DOMContentLoaded', function() {
+          const alerts = document.querySelectorAll('.alert');
+          if (alerts.length > 0) {
+              setTimeout(function() {
+                  alerts.forEach(function(alert) {
+                      alert.style.transition = 'opacity 0.5s ease-out, transform 0.5s ease-out';
+                      alert.style.opacity = '0';
+                      alert.style.transform = 'translateY(-10px)';
+                      setTimeout(function() {
+                          alert.remove();
+                      }, 500);
+                  });
+              }, 3000);
+          }
+      });
     </script>
     <script src="{{ url_for('static', filename='js/loader.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/pwa-install.js') }}"></script>
   </div>
 </body>
 </html>

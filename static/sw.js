@@ -1,12 +1,16 @@
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open('healthscanner-v1').then((cache) => {
+    caches.open('mynutriguide-v2').then((cache) => {
       return cache.addAll([
         '/',
-        '/static/css/styles.css',
+        '/static/css/dashboard.css',
+        '/static/css/scan.css',
+        '/static/css/loader.css',
         '/static/js/camera.js',
-        'https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css',
-        'https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js'
+        '/static/js/loader.js',
+        '/static/js/pwa-install.js',
+        '/static/logo.png',
+        '/static/logo.svg'
       ]);
     })
   );

@@ -282,3 +282,62 @@ html, body { height: 100%; background: #ffffff; font-family: 'Inter', -apple-sys
     overflow: hidden;
     background-color: #e9ecef;
 }
+
+.btn-install {
+    background: #486fa8;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-right: 12px;
+    box-shadow: 0 2px 8px rgba(72, 111, 168, 0.2);
+    transition: transform 0.2s;
+}
+
+.btn-install:hover {
+    transform: scale(1.05);
+}
+
+/* Flash Messages */
+.flash-messages {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 2000;
+    width: 90%;
+    max-width: 400px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    pointer-events: none; /* Allow clicks to pass through */
+}
+
+.alert {
+    padding: 12px 16px;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 500;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    animation: slideDown 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+    pointer-events: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.alert-info {
+    background-color: #3e6596;
+    color: white;
+    border: 1px solid rgba(255,255,255,0.1);
+    backdrop-filter: blur(8px);
+}
+
+@keyframes slideDown {
+    from { transform: translateY(-20px) scale(0.95); opacity: 0; }
+    to { transform: translateY(0) scale(1); opacity: 1; }
+}
